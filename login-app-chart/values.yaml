@@ -1,0 +1,32 @@
+
+replicaCount: 2
+
+image:
+  repository: rithuraj6/hello-app
+  tag: v1
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8081
+
+ingress:
+  enabled: true
+  className: nginx
+  host: hello.local
+
+resources: {}
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+serviceAccount:
+  create: true
+  name: ""
+
+cronjob:
+  enabled: false

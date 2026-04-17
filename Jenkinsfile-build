@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "rithuraj6/hello-app"
+        IMAGE_TAG = "v${BUILD_NUMBER}"
+    }
+
+    stages {
+
+       
+
+        stage('Build JAR') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                sh '''
+                docker login -u rithuraj6 -p docker-creds
+                docker push $IMAGE_NAME:$IMAGE_TAG
+                docker logout
+                '''
+            }
+        }
+
+        stage('Update Helm Values') {
+            steps {
+                sh '''
+                sed -i "s/tag:.*/tag: $IMAGE_TAG/" login-app-chart/values.yaml
+                '''
+            }
+        }
+
+        stage('Package Helm') {
+            steps {
+                sh 'helm package login-app-chart'
+            }
+        }
+
+        stage('Trigger Deploy') {
+            steps {
+                build job: 'hello-deploy',
+                parameters: [
+                    string(name: 'IMAGE_TAG', value: "${IMAGE_TAG}")
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'IMAGE_TAG', defaultValue: '', description: 'Docker image tag')
+    }
+
+    stages {
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                helm upgrade --install login-app-chart login-app-chart \
+                --set image.tag=$IMAGE_TAG
+                '''
+            }
+        }
+    }
+}

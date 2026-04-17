@@ -58,7 +58,7 @@ pipeline {
 
         stage('Trigger Deploy') {
             steps {
-                build job: 'hello-deploy',
+                build job: 'helm-deploy',
                 parameters: [
                     string(name: 'IMAGE_TAG', value: "${IMAGE_TAG}")
                 ]

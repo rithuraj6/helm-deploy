@@ -10,8 +10,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh '''
-                helm upgrade --install login-app-chart login-app-chart \
-                --set image.tag=$IMAGE_TAG
+                helm upgrade --install hello-app login-app-chart --set image.tag=v12
                 '''
             }
         }
